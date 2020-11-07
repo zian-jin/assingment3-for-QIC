@@ -1,0 +1,81 @@
+## Assignment 3.1: 
+### a) What is the purpose of the *ancilla qubit*?
+
+`
+To ensure there is one qubit states initialized to |1> 
+`
+
+### b) Given the following Input/Output (I/O) relation which of these functions are balanced and which of them are constant?:
+
+1. $F_1(x)$ :: Inputs = $|000> |001> |010>$, Outputs = $|000>$
+2. $F_2(x)$ :: Inputs = $|000> |001> |010>$, Outputs = $|010>$
+3. $F_3(x)$ :: Inputs = $|000> |001> |010>$, Outputs = $|110>$
+4. $F_4(x)$ :: Inputs = $|000> |001> |010>$, Outputs = $|111>$
+
+`
+1,4 are constant, 2,3 are balanced
+`
+
+## Assignmrnt 3.2
+import pandas as pd
+Dow_Jones_real_df = pd.read_csv("dow_jones_index.csv") 
+Dow_Jones_real_df
+import matplotlib.pyplot as plt
+%matplotlib inline
+import qiskit
+from qiskit import *
+from qiskit.tools.visualization import plot_histogram
+import numpy as np
+
+nbit = 3
+qr = QuantumRegister(nbit+1)
+cr = ClassicalRegister(nbit)  
+
+PredictionCircuit = QuantumCircuit(qr,cr)
+PredictionCircuit.x(0)
+PredictionCircuit.x(1)
+
+PredictionCircuit.barrier()
+PredictionCircuit.x(qr[nbit])
+
+PredictionCircuit.barrier()
+
+PredictionCircuit.h(qr)
+
+PredictionCircuit.barrier()
+
+PredictionCircuit.draw("mpl")
+
+N = 22 # randomly chosen number
+
+CurrentDay = len(Dow_Jones_real_df["end_price"])/22
+PredictedDayValue = 0
+CurrentDayValue = Dow_Jones_real_df["end_price"][CurrentDay]
+CurrentDayValue = Dow_Jones_real_df["end_price"][CurrentDay]
+
+for i, j in enumerate(Dow_Jones_real_df["end_price"]):
+    i = N
+    PredictedDayValue = Dow_Jones_real_df["end_price"][i]
+
+print("Predicted: ", PredictedDayValue)
+print("Current: ", CurrentDayValue)
+
+if PredictedDayValue > CurrentDayValue:
+    PredictionCircuit.x(qr[nbit])
+    
+elif CurrentDayValue > PredictedDayValue :
+    PredictionCircuit.cx(qr[nbit-2],qr[nbit])
+    
+else:
+    print("Invalid")
+    
+## optional task    
+
+n = 3
+const_oracle = QuantumCircuit(n+1)
+
+output = np.random.randint(2)
+if output == 1:
+    const_oracle.x(n)
+
+const_oracle.draw()
